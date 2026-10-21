@@ -1,0 +1,578 @@
+/* Driftless: a train timetable for messages (after Marey, 1885).
+   Cool paper, ink lanes, one colour per kind of traffic, red only for failure. */
+
+:root {
+  --paper: #eceeec;
+  --paper-deep: #e1e5e3;
+  --ink: #1d2528;
+  --ink-soft: #55615f;
+  --rule: #c9d0cd;
+  --vote: #b07a12;
+  --append: #22609e;
+  --reply: #8a9693;
+  --red: #c2362b;
+  --held: #2f6b4f;
+  --font: "Overpass", "Helvetica Neue", Arial, sans-serif;
+  --mono: "Overpass Mono", ui-monospace, Menlo, monospace;
+  --gutter: clamp(16px, 4vw, 40px);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #161b1d;
+    --paper-deep: #1f2629;
+    --ink: #e4e8e6;
+    --ink-soft: #9aa6a3;
+    --rule: #333d40;
+    --vote: #d9a440;
+    --append: #6aa6e0;
+    --reply: #6b7774;
+    --red: #ef6b5f;
+    --held: #73b896;
+    color-scheme: dark;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+body {
+  font: 400 16px/1.55 var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--ink-soft);
+}
+
+:focus-visible {
+  outline: 2px solid var(--append);
+  outline-offset: 2px;
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+.page {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 var(--gutter) 56px;
+}
+
+/* ---- masthead ------------------------------------------------------------- */
+
+.masthead {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 6px 24px;
+  padding: 30px 0 22px;
+  border-bottom: 3px solid var(--ink);
+}
+
+.wordmark {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.tagline {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.source {
+  font-size: 15px;
+}
+
+/* ---- scenario switcher: departure-board style rows ------------------------ */
+
+.scenarios {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--rule);
+}
+
+.scenarios a {
+  display: grid;
+  gap: 2px;
+  padding: 14px 16px 12px 0;
+  text-decoration: none;
+  border-top: 4px solid transparent;
+  margin-top: -1px;
+}
+
+.scenarios a:hover .scenario-title {
+  text-decoration: underline;
+  text-decoration-color: var(--ink-soft);
+}
+
+.scenarios a[aria-current="page"] {
+  border-top-color: var(--append);
+}
+
+.scenario-title {
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.scenario-note {
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.blurb {
+  max-width: 70ch;
+  margin: 22px 0 0;
+  font-size: 18px;
+}
+
+/* ---- facts and verdict ------------------------------------------------------ */
+
+.facts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px 40px;
+  margin-top: 20px;
+}
+
+.facts > p {
+  margin: 0;
+  color: var(--ink-soft);
+  max-width: 60ch;
+}
+
+.facts strong {
+  color: var(--ink);
+}
+
+.verdict {
+  padding-left: 14px;
+  border-left: 4px solid var(--held);
+}
+
+.verdict p {
+  margin: 0;
+}
+
+.verdict-broken {
+  border-left-color: var(--red);
+}
+
+.verdict-detail {
+  margin-top: 6px !important;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  overflow-wrap: anywhere;
+}
+
+.verdict button {
+  margin-top: 10px;
+  padding: 7px 14px 5px;
+  border: 1.5px solid var(--red);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--red);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.verdict button:hover {
+  background: var(--red);
+  color: var(--paper);
+}
+
+/* ---- controls -------------------------------------------------------------- */
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 28px 0 6px;
+}
+
+.zoom,
+.pan {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.zoom button,
+.pan button {
+  padding: 5px 12px 3px;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: transparent;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.zoom button:hover,
+.pan button:hover {
+  border-color: var(--ink-soft);
+}
+
+.zoom button[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.window {
+  min-width: 128px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+/* ---- the timetable ------------------------------------------------------------ */
+
+.chart-wrap {
+  width: 100%;
+}
+
+.chart {
+  display: block;
+  font-family: var(--font);
+}
+
+.ruler line {
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+
+.ruler text {
+  fill: var(--ink-soft);
+  font-family: var(--mono);
+  font-size: 11px;
+  text-anchor: middle;
+}
+
+.lane-label {
+  fill: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  text-anchor: end;
+}
+
+.strip-label {
+  fill: var(--ink-soft);
+  font-weight: 400;
+}
+
+.hatch {
+  stroke: var(--rule);
+  stroke-width: 2;
+}
+
+.lane {
+  stroke: var(--ink);
+  stroke-linecap: butt;
+}
+
+.lane-0 {
+  stroke-width: 1.4;
+}
+
+.lane-1 {
+  stroke-width: 2;
+  stroke-dasharray: 4 3;
+}
+
+.lane-2 {
+  stroke-width: 6;
+}
+
+.msg {
+  stroke-width: 1.3;
+  stroke-linecap: round;
+}
+
+.msg-vote {
+  stroke: var(--vote);
+  stroke-width: 1.6;
+}
+
+.msg-vote-resp {
+  stroke: var(--vote);
+  stroke-dasharray: 2 2.5;
+}
+
+.msg-append {
+  stroke: var(--append);
+  stroke-width: 1.6;
+}
+
+.msg-append.msg-quiet {
+  stroke: var(--reply);
+  stroke-width: 0.8;
+  opacity: 0.55;
+}
+
+.msg-append-resp {
+  stroke: var(--reply);
+  stroke-width: 0.8;
+  stroke-dasharray: 2 2.5;
+  opacity: 0.8;
+}
+
+.loss {
+  fill: none;
+  stroke: var(--ink-soft);
+  stroke-width: 1.3;
+}
+
+.term {
+  fill: var(--ink);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.fault circle {
+  stroke: var(--ink);
+  stroke-width: 1.6;
+}
+
+.fault-crash circle {
+  fill: var(--ink);
+}
+
+.fault-restart circle {
+  fill: var(--paper);
+}
+
+.op rect {
+  fill: var(--paper-deep);
+  stroke: var(--ink-soft);
+  stroke-width: 0.8;
+}
+
+.op-get rect {
+  fill: transparent;
+}
+
+.op-open rect {
+  stroke-dasharray: 3 2;
+}
+
+.op text {
+  fill: var(--ink);
+  font-family: var(--mono);
+  font-size: 9.5px;
+  pointer-events: none;
+}
+
+.op-culprit rect {
+  fill: var(--red);
+  stroke: var(--red);
+}
+
+.op-culprit text {
+  fill: var(--paper);
+}
+
+.violation line {
+  stroke: var(--red);
+  stroke-width: 2;
+}
+
+/* ---- minimap -------------------------------------------------------------------- */
+
+.minimap {
+  display: block;
+  margin-top: 14px;
+  cursor: ew-resize;
+  touch-action: none;
+}
+
+.mm-lane {
+  fill: var(--paper-deep);
+}
+
+.mm-lead {
+  fill: var(--ink);
+}
+
+.mm-cut {
+  fill: var(--rule);
+}
+
+.mm-down {
+  fill: var(--ink-soft);
+  opacity: 0.35;
+}
+
+.mm-violation {
+  fill: var(--red);
+}
+
+.mm-window {
+  fill: var(--append);
+  fill-opacity: 0.1;
+  stroke: var(--append);
+  stroke-width: 1.5;
+}
+
+.mm-axis {
+  fill: var(--ink-soft);
+  font-family: var(--mono);
+  font-size: 10.5px;
+}
+
+/* ---- legend ---------------------------------------------------------------------- */
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin: 18px 0 0;
+  padding: 14px 0 0;
+  border-top: 1px solid var(--rule);
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.legend div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend dt,
+.legend dd {
+  margin: 0;
+  display: flex;
+}
+
+/* ---- hunts table ------------------------------------------------------------------- */
+
+.hunts {
+  margin-top: 56px;
+}
+
+.hunts h2 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.hunts-intro {
+  max-width: 70ch;
+  margin: 8px 0 18px;
+  color: var(--ink-soft);
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+th,
+td {
+  padding: 11px 16px 9px 0;
+  text-align: left;
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+
+thead th {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  border-bottom: 2px solid var(--ink);
+}
+
+tbody th {
+  font-weight: 800;
+}
+
+.num {
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 14px;
+}
+
+.row-clean td:nth-child(2) {
+  color: var(--held);
+  font-weight: 600;
+}
+
+.row-failed td:nth-child(2) {
+  color: var(--red);
+  font-weight: 600;
+}
+
+/* ---- misc --------------------------------------------------------------------------- */
+
+.notice {
+  padding: 12px 16px;
+  border-left: 4px solid var(--red);
+  background: var(--paper-deep);
+}
+
+.loading {
+  color: var(--ink-soft);
+}
+
+.colophon {
+  margin-top: 56px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.colophon p {
+  max-width: 80ch;
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .masthead {
+    grid-template-columns: 1fr auto;
+  }
+  .tagline {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .scenarios {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .facts {
+    grid-template-columns: 1fr;
+  }
+}

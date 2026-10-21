@@ -1,0 +1,36 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+      - run: go vet ./...
+      - run: go test -race ./...
+      - name: Correct Raft survives 1,000 seeds
+        run: go run ./cmd/driftless hunt -seeds 1000
+      - name: Every planted bug is still caught
+        run: |
+          for bug in stale-reads forget-vote figure-8; do
+            out=$(go run ./cmd/driftless hunt -seeds 600 -bug "$bug")
+            echo "$out" | tail -n 4
+            echo "$out" | grep -q "runs failed" || { echo "$bug was not caught"; exit 1; }
+          done
+
+  viewer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci && npm run build
+        working-directory: web
