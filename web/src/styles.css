@@ -102,7 +102,7 @@ p {
   justify-content: center;
   margin: clamp(18px, 4vw, 44px) 0 clamp(10px, 2vw, 22px);
   white-space: nowrap;
-  font-size: 18.6vw; /* deliberately a touch wider than the page, cropped at both edges */
+  font-size: 14.7vw; /* about 4% wider than the page: a sliver cropped at each edge */
   font-weight: 900;
   font-stretch: 125%;
   line-height: 0.8;
@@ -130,7 +130,7 @@ p {
 }
 
 .lead-text {
-  max-width: 22ch;
+  max-width: 24ch;
   font-size: clamp(30px, 4.6vw, 62px);
   font-weight: 500;
   font-stretch: 100%;
