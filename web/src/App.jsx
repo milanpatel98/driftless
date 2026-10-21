@@ -111,9 +111,9 @@ export default function App() {
       <Hunts hunts={hunts} />
 
       <footer className="colophon">
-        <p>Built by Milan Patel in Go, standard library only.</p>
+        <p>© 2026 Milan Patel</p>
         <p>
-          Reproduce this run: <code>driftless replay -seed {model?.seed ?? "N"}{scenario !== "healthy" ? ` -bug ${scenario}` : ""}</code>
+          <a href="https://github.com/milanpatel98/driftless/blob/main/LICENSE">MIT License</a>
         </p>
       </footer>
       </div>
