@@ -269,12 +269,12 @@ function Hunts({ hunts }) {
               return (
                 <tr key={k} className={h.failed ? "row-failed" : "row-clean"}>
                   <th scope="row">{label}</th>
-                  <td className="num">
+                  <td className="num" data-label="Runs failed">
                     {fmt(h.failed)} of {fmt(h.seeds)}
                   </td>
-                  <td className="num">{h.firstFailingSeed > 0 ? h.firstFailingSeed : "none"}</td>
-                  <td>{caught.length ? caught.join(", ") : "nothing to catch"}</td>
-                  <td className="num">{fmt(h.ops)}</td>
+                  <td className="num" data-label="First failing seed">{h.firstFailingSeed > 0 ? h.firstFailingSeed : "none"}</td>
+                  <td data-label="Caught by">{caught.length ? caught.join(", ") : "nothing to catch"}</td>
+                  <td className="num" data-label="Client ops checked">{fmt(h.ops)}</td>
                 </tr>
               );
             })}

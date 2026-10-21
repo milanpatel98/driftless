@@ -670,4 +670,42 @@ tbody th {
   .window {
     min-width: 0;
   }
+  /* results table becomes stacked rows */
+  thead {
+    display: none;
+  }
+  table,
+  tbody,
+  tr,
+  th,
+  td {
+    display: block;
+  }
+  tr {
+    padding: 14px 0 12px;
+    border-bottom: 1px solid var(--rule);
+  }
+  th,
+  td {
+    padding: 2px 0;
+    border: 0;
+    white-space: normal;
+  }
+  tbody th {
+    margin-bottom: 6px;
+    font-size: 20px;
+  }
+  td {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    text-align: right;
+  }
+  td::before {
+    content: attr(data-label);
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 14px;
+    text-align: left;
+  }
 }
