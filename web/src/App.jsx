@@ -58,22 +58,48 @@ export default function App() {
   const model = runs[scenario];
 
   return (
-    <div className="page">
-      <header className="masthead">
-        <h1 className="wordmark">Driftless</h1>
-        <p className="tagline">Raft consensus, checked by a deterministic simulator that tries to break it.</p>
-        <a className="source" href="https://github.com/milanpatel98/driftless">
-          Source on GitHub
-        </a>
+    <div className="shell">
+      <header className="hero">
+        <div className="bar">
+          <span>(Driftless – 02)</span>
+          <a href="https://github.com/milanpatel98/driftless">Source</a>
+        </div>
+        <h1 className="word" aria-label="Driftless">
+          <span aria-hidden="true">Driftless</span>
+        </h1>
+        <p className="hero-line">
+          Raft consensus, checked by a
+          <br />
+          deterministic simulator that tries to break it
+        </p>
       </header>
 
+      <div className="page">
+      <section className="lead">
+        <p className="lead-text">
+          {hunts.none ? (
+            <>
+              {fmt(hunts.none.seeds)} seeded runs. {fmt(hunts.none.faults)} injected crashes and partitions.{" "}
+              <span className="lead-strong">{hunts.none.failed === 0 ? "Zero" : fmt(hunts.none.failed)} broken invariants.</span>
+            </>
+          ) : (
+            "Five nodes, one seed, every message on the record."
+          )}
+        </p>
+      </section>
+
       <nav className="scenarios" aria-label="Scenarios">
-        {SCENARIOS.map((s) => (
-          <a key={s.id} href={`#/${s.id}`} aria-current={s.id === scenario ? "page" : undefined}>
-            <span className="scenario-title">{s.title}</span>
-            <span className="scenario-note">{s.id === "healthy" ? "no bug" : "planted bug"}</span>
-          </a>
-        ))}
+        <h2 className="scenarios-title">Replays</h2>
+        <ul>
+          {SCENARIOS.map((s, i) => (
+            <li key={s.id}>
+              <a href={`#/${s.id}`} aria-current={s.id === scenario ? "page" : undefined}>
+                <span className="scenario-title">{s.title}</span>
+                <span className="scenario-note">{s.id === "healthy" ? "No bug" : "Planted bug"}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
       </nav>
 
       <p className="blurb">{meta.blurb}</p>
@@ -84,11 +110,12 @@ export default function App() {
       <Hunts hunts={hunts} />
 
       <footer className="colophon">
+        <p>Built by Milan Patel in Go, standard library only.</p>
         <p>
-          Built by Milan Patel in Go, standard library only. Every run on this page is reproducible:{" "}
-          <code>driftless replay -seed {model?.seed ?? "N"}{scenario !== "healthy" ? ` -bug ${scenario}` : ""}</code>.
+          Reproduce this run: <code>driftless replay -seed {model?.seed ?? "N"}{scenario !== "healthy" ? ` -bug ${scenario}` : ""}</code>
         </p>
       </footer>
+      </div>
     </div>
   );
 }
