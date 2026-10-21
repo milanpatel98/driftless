@@ -11,9 +11,10 @@ const ZOOMS = [
 
 function useWidth() {
   const ref = useRef(null);
-  const [width, setWidth] = useState(960);
+  const [width, setWidth] = useState(0);
   useLayoutEffect(() => {
     const el = ref.current;
+    setWidth(Math.floor(el.clientWidth));
     const ro = new ResizeObserver(([e]) => setWidth(Math.floor(e.contentRect.width)));
     ro.observe(el);
     return () => ro.disconnect();
@@ -121,7 +122,7 @@ export default function App() {
 }
 
 function Replay({ model }) {
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(() => (window.innerWidth < 640 ? 0 : 1));
   const [heartbeats, setHeartbeats] = useState(false);
   const span = Math.min(ZOOMS[zoom].span, model.ticks);
   const first = model.violations[0];
@@ -188,8 +189,12 @@ function Replay({ model }) {
       </div>
 
       <div className="chart-wrap" ref={ref}>
-        <Chart model={model} from={from} span={span} width={width} heartbeats={heartbeats} />
-        <Minimap model={model} from={from} span={span} width={width} onSeek={setFrom} />
+        {width > 0 && (
+          <>
+            <Chart model={model} from={from} span={span} width={width} heartbeats={heartbeats} />
+            <Minimap model={model} from={from} span={span} width={width} onSeek={setFrom} />
+          </>
+        )}
       </div>
 
       <Legend />

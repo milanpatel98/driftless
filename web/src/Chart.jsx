@@ -5,7 +5,7 @@ const LANE = 54; // vertical distance between node lanes
 const TOP = 40;
 const CLIENT_ROW = 16;
 const GAP = 46; // between the last lane and the client strip
-const LEFT = 72;
+const LEFT = typeof window !== "undefined" && window.innerWidth < 640 ? 58 : 72;
 const RIGHT = 14;
 
 // Heartbeats and their acknowledgements: most of the traffic, least of the story.
