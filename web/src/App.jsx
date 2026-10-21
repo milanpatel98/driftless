@@ -4,9 +4,9 @@ import Minimap from "./Minimap.jsx";
 import { KIND_TEXT, SCENARIOS, buildModel, fmt } from "./model.js";
 
 const ZOOMS = [
-  { span: 80, label: "80 ticks" },
-  { span: 200, label: "200 ticks" },
-  { span: 500, label: "500 ticks" },
+  { span: 40, label: "40 ticks" },
+  { span: 100, label: "100 ticks" },
+  { span: 300, label: "300 ticks" },
 ];
 
 function useWidth() {
@@ -95,6 +95,7 @@ export default function App() {
 
 function Replay({ model }) {
   const [zoom, setZoom] = useState(1);
+  const [heartbeats, setHeartbeats] = useState(false);
   const span = Math.min(ZOOMS[zoom].span, model.ticks);
   const first = model.violations[0];
   const [from, setFrom] = useState(() => (first ? Math.max(0, first.at - Math.round(span * 0.7)) : 0));
@@ -142,6 +143,10 @@ function Replay({ model }) {
             </button>
           ))}
         </div>
+        <label className="toggle">
+          <input type="checkbox" checked={heartbeats} onChange={(e) => setHeartbeats(e.target.checked)} />
+          Show heartbeats
+        </label>
         <div className="pan">
           <button type="button" onClick={() => setFrom(clamp(from - Math.round(span / 2)))} aria-label="Earlier">
             Earlier
@@ -156,7 +161,7 @@ function Replay({ model }) {
       </div>
 
       <div className="chart-wrap" ref={ref}>
-        <Chart model={model} from={from} span={span} width={width} />
+        <Chart model={model} from={from} span={span} width={width} heartbeats={heartbeats} />
         <Minimap model={model} from={from} span={span} width={width} onSeek={setFrom} />
       </div>
 

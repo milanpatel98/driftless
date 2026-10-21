@@ -8,11 +8,14 @@ const GAP = 46; // between the last lane and the client strip
 const LEFT = 72;
 const RIGHT = 14;
 
+// Heartbeats and their acknowledgements: most of the traffic, least of the story.
+const routine = (m) => (m.type === "append" && m.entries === 0) || (m.type === "append-resp" && m.ok);
+
 export function chartHeight(model) {
   return TOP + LANE * (model.nodes - 1) + GAP + CLIENT_ROW * model.clients + 30;
 }
 
-export default function Chart({ model, from, span, width }) {
+export default function Chart({ model, from, span, width, heartbeats }) {
   const to = Math.min(model.ticks, from + span);
   const plot = Math.max(240, width - LEFT - RIGHT);
   const x = (t) => LEFT + ((t - from) / span) * plot;
@@ -36,15 +39,15 @@ export default function Chart({ model, from, span, width }) {
 
   const view = useMemo(
     () => ({
-      sends: model.sends.filter((m) => m.deliver >= from && m.tick < to),
-      losses: model.losses.filter((l) => inWindow(l.tick)),
+      sends: model.sends.filter((m) => m.deliver >= from && m.tick < to && (heartbeats || !routine(m))),
+      losses: model.losses.filter((l) => inWindow(l.tick) && (heartbeats || !routine(l))),
       ops: model.ops.filter((o) => (o.end ?? model.ticks) >= from && o.start < to),
       violations: model.violations.filter((v) => inWindow(v.at)),
       faults: model.faults.filter((f) => inWindow(f.t) && (f.kind === "crash" || f.kind === "restart")),
       elections: model.elections.filter((e) => inWindow(e.t)),
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [model, from, to],
+    [model, from, to, heartbeats],
   );
 
   const step = span <= 90 ? 10 : span <= 220 ? 20 : 50;

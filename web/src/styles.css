@@ -245,6 +245,23 @@ button {
   color: var(--paper);
 }
 
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-right: auto;
+  margin-left: 12px;
+  font-size: 14px;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.toggle input {
+  accent-color: var(--append);
+  width: 15px;
+  height: 15px;
+}
+
 .window {
   min-width: 128px;
   text-align: center;
