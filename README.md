@@ -1,3 +1,5 @@
+<img src="docs/logo.svg" alt="" width="72">
+
 # Driftless
 
 **Raft consensus in Go, checked by a deterministic simulator that tries to break it.**

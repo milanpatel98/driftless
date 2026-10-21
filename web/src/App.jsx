@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import markUrl from "./mark.svg";
 import Chart from "./Chart.jsx";
 import Minimap from "./Minimap.jsx";
 import { KIND_TEXT, SCENARIOS, buildModel, fmt } from "./model.js";
@@ -62,7 +63,10 @@ export default function App() {
     <div className="shell">
       <header className="hero">
         <div className="bar">
-          <span>(Driftless – 02)</span>
+          <span className="bar-brand">
+            <img src={markUrl} alt="" className="bar-mark" />
+            (Driftless – 02)
+          </span>
           <a href="https://github.com/milanpatel98/driftless">Source</a>
         </div>
         <h1 className="word" aria-label="Driftless">
