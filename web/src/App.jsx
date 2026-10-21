@@ -229,7 +229,7 @@ function Legend() {
         <dd>Crash</dd>
       </div>
       <div>
-        <dt><svg width="34" height="10"><rect className="op op-put" x="2" y="0" width="30" height="10" rx="2" /></svg></dt>
+        <dt><svg width="34" height="10"><g className="op op-put"><rect x="2" y="0.5" width="30" height="9" rx="2" /></g></svg></dt>
         <dd>Client request, call to reply</dd>
       </div>
     </dl>

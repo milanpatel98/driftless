@@ -137,8 +137,8 @@ export default function Chart({ model, from, span, width, heartbeats }) {
           return (
             <g key={o.id} className={`op op-${o.kind}${o.culprit ? " op-culprit" : ""}${o.end == null ? " op-open" : ""}`}>
               <rect x={x1} y={cy(o.client) - 5} width={x2 - x1} height={10} rx={2} />
-              {x2 - x1 > 58 && (
-                <text x={x1 + 5} y={cy(o.client) + 3.5}>
+              {x2 - Math.max(x1, LEFT) > 58 && (
+                <text x={Math.max(x1, LEFT) + 5} y={cy(o.client) + 3.5}>
                   {label}
                 </text>
               )}
