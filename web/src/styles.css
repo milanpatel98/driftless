@@ -663,6 +663,24 @@ tbody th {
   color: var(--muted);
 }
 
+.colophon-nh {
+  font-size: 14px;
+}
+.colophon-nh .nh-mark {
+  height: 13px;
+  color: var(--ink);
+}
+.colophon-nh .nh-name {
+  padding-bottom: 1px;
+  background: linear-gradient(var(--orange), var(--orange)) left bottom / 0% 2px no-repeat;
+  transition: background-size 0.45s cubic-bezier(0.22, 1, 0.36, 1), color 120ms;
+}
+.colophon-nh:hover .nh-name,
+.colophon-nh:focus-visible .nh-name {
+  background-size: 100% 2px;
+  color: var(--ink);
+}
+
 @media (max-width: 760px) {
   .scenarios {
     grid-template-columns: 1fr;

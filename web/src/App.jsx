@@ -3,6 +3,7 @@ import markUrl from "./mark.svg";
 import Chart from "./Chart.jsx";
 import Minimap from "./Minimap.jsx";
 import { KIND_TEXT, SCENARIOS, buildModel, fmt } from "./model.js";
+import NeuralHorn from "./NeuralHorn.jsx";
 
 const ZOOMS = [
   { span: 40, label: "40 ticks" },
@@ -115,7 +116,9 @@ export default function App() {
       <Hunts hunts={hunts} />
 
       <footer className="colophon">
-        <p>© 2026 Milan Patel</p>
+        <p>
+          <NeuralHorn className="colophon-nh" />
+        </p>
         <p>
           <a href="https://github.com/milanpatel98/driftless/blob/main/LICENSE">MIT License</a>
         </p>
